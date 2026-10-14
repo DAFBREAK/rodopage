@@ -1,0 +1,1640 @@
+html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SUBWAY DJ DE RODO COMPANY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --cyan: #00f0ff;
+      --magenta: #ff007f;
+      --purple: #a855f7;
+      --lime: #39ff14;
+      --gold: #ffd700;
+      --bg: #030014;
+      --card-bg: rgba(13, 10, 35, 0.94);
+      --paypal-gold: #ffc439;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      font-family: 'Orbitron', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+      background: radial-gradient(circle at center, #1b0042 0%, #030014 100%);
+    }
+
+    #gameWrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      max-width: 500px;
+      max-height: 940px;
+      display: flex;
+      flex-direction: column;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 50px rgba(255, 0, 127, 0.35), 0 0 80px rgba(0, 240, 255, 0.25);
+      border: 2px solid rgba(0, 240, 255, 0.45);
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      background: #000;
+    }
+
+    /* Top HUD */
+    .hud {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    .hud-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hud-box {
+      background: rgba(13, 10, 35, 0.88);
+      border: 1.5px solid var(--cyan);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.4), inset 0 0 6px rgba(0, 240, 255, 0.2);
+      padding: 5px 12px;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+    }
+
+    .hud-box.gold-box {
+      border-color: var(--gold);
+      box-shadow: 0 0 14px rgba(255, 215, 0, 0.4), inset 0 0 6px rgba(255, 215, 0, 0.2);
+    }
+
+    .hud-sub {
+      font-size: 0.58rem;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+    }
+
+    .hud-num {
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: var(--cyan);
+      text-shadow: 0 0 10px var(--cyan);
+    }
+
+    .hud-num.gold {
+      color: var(--gold);
+      text-shadow: 0 0 10px var(--gold);
+    }
+
+    .hud-ctrls {
+      pointer-events: auto;
+      display: flex;
+      gap: 6px;
+    }
+
+    .hud-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(13, 10, 35, 0.9);
+      border: 1.5px solid var(--magenta);
+      box-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .hud-btn:active {
+      transform: scale(0.92);
+      background: var(--magenta);
+      color: #000;
+    }
+
+    /* Classical EDM DJ Track Bar */
+    .track-selector-bar {
+      pointer-events: auto;
+      background: rgba(13, 10, 35, 0.9);
+      border: 1.5px solid var(--purple);
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+      border-radius: 14px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .track-info {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .track-icon {
+      font-size: 1rem;
+      animation: vinylSpin 3s linear infinite;
+    }
+
+    @keyframes vinylSpin {
+      100% { transform: rotate(360deg); }
+    }
+
+    .track-name {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--lime);
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 8px var(--lime);
+    }
+
+    .btn-track-switch {
+      background: linear-gradient(90deg, #9333ea, #c026d3);
+      color: #fff;
+      border: 1px solid #fff;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-size: 0.65rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 10px rgba(192, 38, 211, 0.5);
+    }
+
+    .btn-track-switch:active {
+      transform: scale(0.92);
+    }
+
+    /* Mobile On-Screen Action Deck */
+    .touch-deck {
+      position: absolute;
+      bottom: 14px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 20;
+      pointer-events: auto;
+    }
+
+    .touch-pill {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: rgba(13, 10, 35, 0.85);
+      border: 2px solid var(--cyan);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.35);
+      color: var(--cyan);
+      font-size: 1.4rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .touch-pill:active {
+      background: var(--cyan);
+      color: #030014;
+      box-shadow: 0 0 35px var(--cyan);
+      transform: scale(0.92);
+    }
+
+    .touch-pill.magenta-pill {
+      border-color: var(--magenta);
+      color: var(--magenta);
+      box-shadow: 0 0 20px rgba(255, 0, 127, 0.35);
+    }
+
+    .touch-pill.magenta-pill:active {
+      background: var(--magenta);
+      color: #030014;
+      box-shadow: 0 0 35px var(--magenta);
+    }
+
+    /* Overlays */
+    .overlay-screen {
+      position: absolute;
+      inset: 0;
+      background: rgba(3, 0, 20, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      text-align: center;
+      overflow-y: auto;
+    }
+
+    .overlay-screen.hidden {
+      display: none;
+    }
+
+    .brand-top {
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      color: var(--magenta);
+      font-weight: 800;
+      text-shadow: 0 0 12px var(--magenta);
+      margin-bottom: 2px;
+    }
+
+    .game-title {
+      font-size: 1.85rem;
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, var(--cyan) 0%, #fff 50%, var(--magenta) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(0, 240, 255, 0.6);
+      margin-bottom: 10px;
+    }
+
+    .vip-pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 900;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+      background: rgba(255, 215, 0, 0.18);
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      box-shadow: 0 0 16px rgba(255, 215, 0, 0.4);
+      margin-bottom: 14px;
+    }
+
+    .vip-pill.active {
+      background: rgba(57, 255, 20, 0.22);
+      border-color: var(--lime);
+      color: var(--lime);
+      box-shadow: 0 0 20px var(--lime);
+    }
+
+    .info-card {
+      background: var(--card-bg);
+      border: 1.5px solid rgba(0, 240, 255, 0.4);
+      border-radius: 18px;
+      padding: 14px;
+      width: 100%;
+      max-width: 390px;
+      margin-bottom: 14px;
+      box-shadow: 0 0 25px rgba(0, 240, 255, 0.15);
+    }
+
+    .info-card p {
+      font-size: 0.76rem;
+      color: #cbd5e1;
+      line-height: 1.45;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 10px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .stat-cell {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stat-label {
+      font-size: 0.58rem;
+      color: #94a3b8;
+    }
+
+    .stat-val {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--cyan);
+      text-shadow: 0 0 10px var(--cyan);
+    }
+
+    .btn-play {
+      width: 100%;
+      max-width: 390px;
+      padding: 15px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      border-radius: 16px;
+      border: none;
+      background: linear-gradient(90deg, #0284c7, var(--cyan));
+      color: #030014;
+      cursor: pointer;
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.6);
+      transition: transform 0.1s;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+    }
+
+    .btn-play:active {
+      transform: scale(0.96);
+    }
+
+    /* VIP Neon Card & Pulsing PayPal Link */
+    .vip-checkout-box {
+      background: linear-gradient(135deg, rgba(255, 0, 127, 0.15), rgba(168, 85, 247, 0.22));
+      border: 2px solid var(--magenta);
+      border-radius: 18px;
+      padding: 14px;
+      width: 100%;
+      max-width: 390px;
+      box-shadow: 0 0 30px rgba(255, 0, 127, 0.35);
+      animation: neonPulse 2s infinite alternate;
+    }
+
+    @keyframes neonPulse {
+      0% { box-shadow: 0 0 20px rgba(255, 0, 127, 0.3); border-color: var(--magenta); }
+      100% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.5); border-color: var(--gold); }
+    }
+
+    .vip-checkout-box h3 {
+      font-size: 0.95rem;
+      color: #fff;
+      font-weight: 900;
+      margin-bottom: 4px;
+      text-shadow: 0 0 12px var(--gold);
+    }
+
+    .vip-checkout-box p {
+      font-size: 0.72rem;
+      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      margin-bottom: 10px;
+      line-height: 1.35;
+    }
+
+    .btn-vip-paypal {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      background: linear-gradient(90deg, #ff9900, #ffc439);
+      color: #000;
+      border: 2px solid #fff;
+      border-radius: 14px;
+      padding: 13px;
+      font-size: 0.96rem;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 0 28px rgba(255, 196, 57, 0.7);
+      animation: pulseBtn 1.5s infinite;
+      transition: all 0.2s ease;
+    }
+
+    @keyframes pulseBtn {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    .btn-vip-paypal svg {
+      width: 20px;
+      height: 20px;
+      fill: #000;
+    }
+
+    .code-input-group {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .code-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.65);
+      border: 1.5px solid var(--magenta);
+      border-radius: 12px;
+      color: #fff;
+      padding: 9px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-align: center;
+      outline: none;
+      letter-spacing: 0.08em;
+    }
+
+    .code-input:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px var(--cyan);
+    }
+
+    .btn-code-activate {
+      background: var(--magenta);
+      border: none;
+      color: #fff;
+      border-radius: 12px;
+      padding: 0 14px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(255, 0, 127, 0.5);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="gameWrapper">
+    <!-- Top HUD Overlay -->
+    <div class="hud">
+      <div class="hud-row-top">
+        <div class="hud-box">
+          <div class="hud-sub">METROS</div>
+          <div class="hud-num" id="hudMeters">0m</div>
+        </div>
+
+        <div class="hud-box gold-box">
+          <div class="hud-sub">VINILOS</div>
+          <div class="hud-num gold" id="hudVinyls">📀 0</div>
+        </div>
+
+        <div class="hud-ctrls">
+          <button class="hud-btn" id="btnMute" title="Silenciar">🔊</button>
+          <button class="hud-btn" id="btnPause" title="Pausar">⏸️</button>
+        </div>
+      </div>
+
+      <!-- Classical EDM Track Live Selector -->
+      <div class="track-selector-bar">
+        <div class="track-info">
+          <span class="track-icon">🎛️</span>
+          <span class="track-name" id="trackNameDisplay">Track 1: 5ta Sinfonía Beethoven (EDM Remix)</span>
+        </div>
+        <button class="btn-track-switch" id="btnNextTrack">CAMBIAR CLÁSICO ⏭️</button>
+      </div>
+    </div>
+
+    <!-- 3D Perspective Canvas Engine -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Mobile Touch Controls Deck -->
+    <div class="touch-deck">
+      <button class="touch-pill" id="touchLeft" aria-label="Izquierda">◀️</button>
+      <button class="touch-pill magenta-pill" id="touchSlide" aria-label="Slide">▼</button>
+      <button class="touch-pill" id="touchJump" aria-label="Saltar">▲</button>
+      <button class="touch-pill" id="touchRight" aria-label="Derecha">▶️</button>
+    </div>
+
+    <!-- Start / Welcome Screen -->
+    <div class="overlay-screen" id="screenStart">
+      <div class="brand-top">RODO COMPANY • ARCADE 3D</div>
+      <div class="game-title">SUBWAY DJ DE RODO COMPANY</div>
+      <div class="vip-pill" id="startVipBadge">MODO GRATUITO (3 VIDAS)</div>
+
+      <div class="info-card">
+        <p>
+          Música clásica legendaria (<b>Beethoven, Mozart y Pachelbel</b>) en versiones <b>EDM Club Remix</b> sintetizadas en tiempo real. ¡Esquiva torres de subwoofers, cabinas de DJ y trusses láser!
+        </p>
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-label">RÉCORD METROS</div>
+            <div class="stat-val" id="startBestDist">0m</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label">VINILOS TOTALES</div>
+            <div class="stat-val" style="color:var(--gold);" id="startTotalVinyls">0</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-play" id="btnPlayGame">¡TOCAR PARA CORRER!</button>
+
+      <!-- VIP PayPal Offer -->
+      <div class="vip-checkout-box">
+        <h3>⚡ MODO VIP PRO ($4.99 USD)</h3>
+        <p>Vidas Infinitas, Skin DJ Dorado brillante con chispas de luz y Multiplicador de Vinilos 3X.</p>
+
+        <a class="btn-vip-paypal" id="startPaypalLink" href="https://www.paypal.me/Mendozabizarre/4.99" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.067 8.478c.492.315.844.825.962 1.408.384 1.884-.39 3.864-1.928 4.93-1.042.723-2.31.954-3.551.954h-1.52c-.417 0-.77.307-.843.72l-.744 4.316a.465.465 0 0 1-.458.384H8.483a.46.46 0 0 1-.454-.539l2.45-14.23a.853.853 0 0 1 .842-.711h4.634c1.865 0 3.332.392 4.112 1.768z"/>
+          </svg>
+          DESBLOQUEAR VIP EN PAYPAL
+        </a>
+
+        <div class="code-input-group">
+          <input type="text" class="code-input" id="startVipInput" placeholder="Código: VIPRODO2026">
+          <button class="btn-code-activate" id="btnStartVipCheck">ACTIVAR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="overlay-screen hidden" id="screenGameOver">
+      <div class="brand-top">¡SESIÓN TERMINADA!</div>
+      <div class="game-title" style="font-size: 1.5rem;">SUBWAY DJ DE RODO COMPANY</div>
+
+      <div class="info-card">
+        <div class="stats-row">
+          <div class="stat-cell">
+            <div class="stat-label">DISTANCIA</div>
+            <div class="stat-val" id="goDist">0m</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label">VINILOS SESIÓN</div>
+            <div class="stat-val" style="color:var(--gold);" id="goVinyls">0</div>
+          </div>
+        </div>
+        <p id="goLivesMsg" style="margin-top:10px; margin-bottom:0; font-size:0.75rem; color:#cbd5e1;">
+          Vidas gratis restantes: 2
+        </p>
+      </div>
+
+      <button class="btn-play" id="btnRestartGame">REINTENTAR</button>
+
+      <!-- VIP Card in Game Over -->
+      <div class="vip-checkout-box">
+        <h3>👑 OBTÉN VIDAS INFINITAS</h3>
+        <p>¿Te quedaste sin vidas? Paga $4.99 USD una sola vez en PayPal y juega sin límites.</p>
+
+        <a class="btn-vip-paypal" id="goPaypalLink" href="https://www.paypal.me/Mendozabizarre/4.99" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.067 8.478c.492.315.844.825.962 1.408.384 1.884-.39 3.864-1.928 4.93-1.042.723-2.31.954-3.551.954h-1.52c-.417 0-.77.307-.843.72l-.744 4.316a.465.465 0 0 1-.458.384H8.483a.46.46 0 0 1-.454-.539l2.45-14.23a.853.853 0 0 1 .842-.711h4.634c1.865 0 3.332.392 4.112 1.768z"/>
+          </svg>
+          PAGAR $4.99 EN PAYPAL
+        </a>
+
+        <div class="code-input-group">
+          <input type="text" class="code-input" id="goVipInput" placeholder="Código: VIPRODO2026">
+          <button class="btn-code-activate" id="btnGoVipCheck">ACTIVAR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const PAYPAL_LINK = "https://www.paypal.me/Mendozabizarre/4.99";
+    const VIP_KEY = "VIPRODO2026";
+
+    let isVip = localStorage.getItem('subway_vip_unlocked') === 'true';
+    let freeLives = parseInt(localStorage.getItem('subway_free_lives') || '3');
+    let highDistance = parseInt(localStorage.getItem('subway_high_dist') || '0');
+    let totalVinylsSaved = parseInt(localStorage.getItem('subway_total_vinyls') || '0');
+
+    // Web Audio Synthesizer Engine
+    let audioCtx = null;
+    let isMuted = false;
+    let synthLoop = null;
+    let stepCount = 0;
+    let activeTrackIndex = 0;
+
+    // Frequencies (Hz) for Classical Melodies
+    const NOTE = {
+      C3: 130.81, D3: 146.83, E3: 164.81, F3: 174.61, G3: 196.00, A3: 220.00, B3: 246.94,
+      C4: 261.63, Cs4: 277.18, D4: 293.66, Ds4: 311.13, E4: 329.63, F4: 349.23, Fs4: 369.99, G4: 392.00, Gs4: 415.30, A4: 440.00, As4: 466.16, B4: 493.88,
+      C5: 523.25, Cs5: 554.37, D5: 587.33, Ds5: 622.25, E5: 659.25, F5: 698.46, Fs5: 739.99, G5: 783.99, Gs5: 830.61, A5: 880.00, B5: 987.77,
+      C6: 1046.50, REST: 0
+    };
+
+    // 3 Iconic Classical Masterpieces adapted to 128 BPM 16th-step EDM Remixes
+    const CLASSICAL_TRACKS = [
+      {
+        name: "Track 1: 5ta Sinfonía Beethoven (EDM Remix)",
+        bpm: 130,
+        melody: [
+          NOTE.G4, NOTE.G4, NOTE.G4, NOTE.Ds4, NOTE.REST, NOTE.Ds4, NOTE.REST, NOTE.REST,
+          NOTE.F4, NOTE.F4, NOTE.F4, NOTE.D4,  NOTE.REST, NOTE.D4,  NOTE.REST, NOTE.REST,
+          NOTE.G4, NOTE.G4, NOTE.G4, NOTE.Ds4, NOTE.G4,   NOTE.G4,  NOTE.G4,   NOTE.Ds4,
+          NOTE.F4, NOTE.F4, NOTE.F4, NOTE.D4,  NOTE.F4,   NOTE.D4,  NOTE.C4,   NOTE.REST
+        ],
+        bass: [
+          NOTE.C3, NOTE.C3, NOTE.C3, NOTE.Gs3, NOTE.C3, NOTE.C3, NOTE.Gs3, NOTE.Gs3,
+          NOTE.As3, NOTE.As3, NOTE.As3, NOTE.G3, NOTE.As3, NOTE.G3, NOTE.G3, NOTE.G3,
+          NOTE.C3, NOTE.C3, NOTE.C3, NOTE.Gs3, NOTE.C3, NOTE.C3, NOTE.Gs3, NOTE.Gs3,
+          NOTE.As3, NOTE.As3, NOTE.As3, NOTE.G3, NOTE.C3, NOTE.D3, NOTE.Ds3, NOTE.C3
+        ]
+      },
+      {
+        name: "Track 2: Para Elisa Beethoven (Trap/House Remix)",
+        bpm: 126,
+        melody: [
+          NOTE.E5, NOTE.Ds5, NOTE.E5, NOTE.Ds5, NOTE.E5, NOTE.B4, NOTE.D5, NOTE.C5,
+          NOTE.A4, NOTE.REST, NOTE.C4, NOTE.E4, NOTE.A4, NOTE.B4, NOTE.REST, NOTE.E4,
+          NOTE.Gs4, NOTE.B4, NOTE.C5, NOTE.REST, NOTE.E4, NOTE.E5, NOTE.Ds5, NOTE.E5,
+          NOTE.Ds5, NOTE.E5, NOTE.B4, NOTE.D5, NOTE.C5, NOTE.A4, NOTE.REST, NOTE.REST
+        ],
+        bass: [
+          NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3,
+          NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.E3, NOTE.E3, NOTE.E3, NOTE.E3,
+          NOTE.E3, NOTE.E3, NOTE.E3, NOTE.E3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3,
+          NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3, NOTE.A3
+        ]
+      },
+      {
+        name: "Track 3: Marcha Turca Mozart (Electro-Club)",
+        bpm: 132,
+        melody: [
+          NOTE.B4, NOTE.A4, NOTE.Gs4, NOTE.A4, NOTE.C5, NOTE.REST, NOTE.D5, NOTE.C5,
+          NOTE.B4, NOTE.C5, NOTE.E5,  NOTE.REST, NOTE.F5, NOTE.E5, NOTE.Ds5, NOTE.E5,
+          NOTE.B5, NOTE.A5, NOTE.Gs5, NOTE.A5, NOTE.B5, NOTE.A5, NOTE.Gs5, NOTE.A5,
+          NOTE.C6, NOTE.REST, NOTE.A5, NOTE.C6, NOTE.B5, NOTE.A5, NOTE.Gs5, NOTE.A5
+        ],
+        bass: [
+          NOTE.A3, NOTE.A3, NOTE.E3, NOTE.E3, NOTE.A3, NOTE.A3, NOTE.E3, NOTE.E3,
+          NOTE.A3, NOTE.A3, NOTE.C4, NOTE.C4, NOTE.D4, NOTE.D4, NOTE.E4, NOTE.E4,
+          NOTE.A3, NOTE.A3, NOTE.E3, NOTE.E3, NOTE.A3, NOTE.A3, NOTE.E3, NOTE.E3,
+          NOTE.F3, NOTE.F3, NOTE.D3, NOTE.D3, NOTE.E3, NOTE.E3, NOTE.A3, NOTE.A3
+        ]
+      }
+    ];
+
+    function getAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSfx(type) {
+      if (isMuted) return;
+      const ctx = getAudio();
+      const t = ctx.currentTime;
+
+      if (type === 'jump') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(280, t);
+        osc.frequency.exponentialRampToValueAtTime(800, t + 0.16);
+        gain.gain.setValueAtTime(0.3, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.16);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.16);
+      } else if (type === 'slide') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(390, t);
+        osc.frequency.exponentialRampToValueAtTime(110, t + 0.15);
+        gain.gain.setValueAtTime(0.28, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.15);
+      } else if (type === 'vinyl') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(987.77, t);
+        osc.frequency.exponentialRampToValueAtTime(1567.98, t + 0.12);
+        gain.gain.setValueAtTime(0.35, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.12);
+      } else if (type === 'usb') {
+        [1046.5, 1318.5, 1567.9].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t + idx * 0.05);
+          gain.gain.setValueAtTime(0.2, t + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + idx * 0.05 + 0.15);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t + idx * 0.05);
+          osc.stop(t + idx * 0.05 + 0.15);
+        });
+      } else if (type === 'crash') {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(140, t);
+        osc.frequency.exponentialRampToValueAtTime(25, t + 0.4);
+        gain.gain.setValueAtTime(0.7, t);
+        gain.gain.exponentialRampToValueAtTime(0.01, t + 0.4);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t);
+        osc.stop(t + 0.4);
+      }
+    }
+
+    // High Energy Classical EDM Synth Engine
+    function startClassicalEdmSynth() {
+      if (synthLoop) clearInterval(synthLoop);
+      stepCount = 0;
+      const currentTrack = CLASSICAL_TRACKS[activeTrackIndex];
+      const tempoInterval = (60 / currentTrack.bpm / 4) * 1000;
+
+      synthLoop = setInterval(() => {
+        if (isMuted || gameState !== 'PLAYING') return;
+        const ctx = getAudio();
+        const t = ctx.currentTime;
+        const melodyArr = currentTrack.melody;
+        const bassArr = currentTrack.bass;
+
+        // 1. Club Sub Kick
+        if (stepCount % 4 === 0) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(155, t);
+          osc.frequency.exponentialRampToValueAtTime(40, t + 0.09);
+          gain.gain.setValueAtTime(0.75, t);
+          gain.gain.exponentialRampToValueAtTime(0.01, t + 0.09);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.09);
+        }
+
+        // 2. Offbeat Hi-Hat
+        if (stepCount % 4 === 2) {
+          const hatOsc = ctx.createOscillator();
+          const hatGain = ctx.createGain();
+          hatOsc.type = 'triangle';
+          hatOsc.frequency.setValueAtTime(7800, t);
+          hatGain.gain.setValueAtTime(0.14, t);
+          hatGain.gain.exponentialRampToValueAtTime(0.01, t + 0.05);
+          hatOsc.connect(hatGain);
+          hatGain.connect(ctx.destination);
+          hatOsc.start(t);
+          hatOsc.stop(t + 0.05);
+        }
+
+        // 3. Classical Lead Melody
+        const melNote = melodyArr[stepCount % melodyArr.length];
+        if (melNote > 0) {
+          const leadOsc = ctx.createOscillator();
+          const leadGain = ctx.createGain();
+          leadOsc.type = 'sawtooth';
+          leadOsc.frequency.setValueAtTime(melNote, t);
+          leadGain.gain.setValueAtTime(0.24, t);
+          leadGain.gain.exponentialRampToValueAtTime(0.01, t + 0.12);
+          leadOsc.connect(leadGain);
+          leadGain.connect(ctx.destination);
+          leadOsc.start(t);
+          leadOsc.stop(t + 0.12);
+        }
+
+        // 4. Rolling Bassline
+        const bassNote = bassArr[stepCount % bassArr.length];
+        if (bassNote > 0) {
+          const bassOsc = ctx.createOscillator();
+          const bassGain = ctx.createGain();
+          bassOsc.type = 'square';
+          bassOsc.frequency.setValueAtTime(bassNote, t);
+          bassGain.gain.setValueAtTime(0.18, t);
+          bassGain.gain.exponentialRampToValueAtTime(0.01, t + 0.09);
+          bassOsc.connect(bassGain);
+          bassGain.connect(ctx.destination);
+          bassOsc.start(t);
+          bassOsc.stop(t + 0.09);
+        }
+
+        stepCount = (stepCount + 1) % 32;
+      }, tempoInterval);
+    }
+
+    function stopClassicalEdmSynth() {
+      if (synthLoop) {
+        clearInterval(synthLoop);
+        synthLoop = null;
+      }
+    }
+
+    function switchClassicalTrack() {
+      activeTrackIndex = (activeTrackIndex + 1) % CLASSICAL_TRACKS.length;
+      document.getElementById('trackNameDisplay').innerText = CLASSICAL_TRACKS[activeTrackIndex].name;
+      if (gameState === 'PLAYING') {
+        startClassicalEdmSynth();
+      }
+    }
+  </script>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      width = canvas.parentElement.clientWidth;
+      height = canvas.parentElement.clientHeight;
+      canvas.width = width;
+      canvas.height = height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const HORIZON = 0.36;
+    const LANES = [-1, 0, 1];
+
+    function project3D(lane, z, yOffset = 0) {
+      const horizonY = height * HORIZON;
+      const screenY = horizonY + (height - horizonY) * (1 - z);
+      const scale = 0.12 + 0.88 * Math.pow(1 - z, 1.4);
+      const laneSpread = width * 0.46;
+      const screenX = (width / 2) + (lane * laneSpread * (1 - z * 0.76));
+
+      return {
+        x: screenX,
+        y: screenY - (yOffset * scale),
+        scale: Math.max(0.05, scale)
+      };
+    }
+
+    // Game state variables
+    let gameState = 'START';
+    let meters = 0;
+    let sessionVinyls = 0;
+    let baseSpeed = 0.0078;
+    let animationPulse = 0;
+
+    // DJ Player Entity
+    const player = {
+      lane: 0,
+      visualLane: 0,
+      y: 0,
+      vy: 0,
+      isJumping: false,
+      isSliding: false,
+      slideTimer: 0,
+      jumpSpin: 0,
+      gravity: 0.95,
+      z: 0.14
+    };
+
+    // Golden Sparkle Particles for VIP
+    let vipParticles = [];
+
+    function triggerVipSparkles(x, y) {
+      if (!isVip) return;
+      for (let i = 0; i < 4; i++) {
+        vipParticles.push({
+          x: x + (Math.random() - 0.5) * 35,
+          y: y + (Math.random() - 0.5) * 35,
+          vx: (Math.random() - 0.5) * 3,
+          vy: -Math.random() * 3 - 1,
+          size: Math.random() * 5 + 2,
+          life: 1.0,
+          decay: 0.04
+        });
+      }
+    }
+
+    // Movement Handlers
+    function moveLeft() {
+      if (gameState !== 'PLAYING') return;
+      if (player.lane > -1) {
+        player.lane--;
+        playSfx('slide');
+      }
+    }
+
+    function moveRight() {
+      if (gameState !== 'PLAYING') return;
+      if (player.lane < 1) {
+        player.lane++;
+        playSfx('slide');
+      }
+    }
+
+    function doJump() {
+      if (gameState !== 'PLAYING') return;
+      if (!player.isJumping && !player.isSliding) {
+        player.isJumping = true;
+        player.vy = 16.5;
+        player.jumpSpin = 0;
+        playSfx('jump');
+      }
+    }
+
+    function doSlide() {
+      if (gameState !== 'PLAYING') return;
+      if (!player.isSliding) {
+        player.isSliding = true;
+        player.slideTimer = 32;
+        if (player.isJumping) {
+          player.vy = -18;
+        }
+        playSfx('slide');
+      }
+    }
+
+    // Keyboard bindings
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') moveLeft();
+      if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') moveRight();
+      if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W' || e.key === ' ') doJump();
+      if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') doSlide();
+    });
+
+    // Touch Swipe Gestures
+    let touchX0 = 0;
+    let touchY0 = 0;
+
+    canvas.addEventListener('touchstart', (e) => {
+      touchX0 = e.changedTouches[0].screenX;
+      touchY0 = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].screenX - touchX0;
+      const dy = e.changedTouches[0].screenY - touchY0;
+      const absX = Math.abs(dx);
+      const absY = Math.abs(dy);
+
+      if (Math.max(absX, absY) > 28) {
+        if (absX > absY) {
+          if (dx > 0) moveRight();
+          else moveLeft();
+        } else {
+          if (dy < 0) doJump();
+          else doSlide();
+        }
+      }
+    }, { passive: true });
+
+    document.getElementById('touchLeft').addEventListener('click', moveLeft);
+    document.getElementById('touchRight').addEventListener('click', moveRight);
+    document.getElementById('touchJump').addEventListener('click', doJump);
+    document.getElementById('touchSlide').addEventListener('click', doSlide);
+
+    let entities = [];
+    let spawnTimer = 0;
+
+    function resetWorld() {
+      entities = [];
+      vipParticles = [];
+      meters = 0;
+      sessionVinyls = 0;
+      baseSpeed = 0.0078;
+      spawnTimer = 0;
+      player.lane = 0;
+      player.visualLane = 0;
+      player.y = 0;
+      player.vy = 0;
+      player.isJumping = false;
+      player.isSliding = false;
+      player.slideTimer = 0;
+      player.jumpSpin = 0;
+    }
+
+    function spawnGameEntity() {
+      const lane = LANES[Math.floor(Math.random() * LANES.length)];
+      const rand = Math.random();
+
+      if (rand < 0.32) {
+        entities.push({
+          type: 'SUBWOOFER',
+          lane: lane,
+          z: 1.0,
+          w: 80,
+          h: 70,
+          pulse: 0
+        });
+      } else if (rand < 0.58) {
+        entities.push({
+          type: 'LASER_TRUSS',
+          lane: lane,
+          z: 1.0,
+          w: 92,
+          h: 88
+        });
+      } else if (rand < 0.78) {
+        entities.push({
+          type: 'DJ_BOOTH',
+          lane: lane,
+          z: 1.0,
+          w: 86,
+          h: 58,
+          turntableAngle: 0
+        });
+      } else if (rand < 0.92) {
+        entities.push({
+          type: 'GOLD_VINYL',
+          lane: lane,
+          z: 1.0,
+          w: 42,
+          h: 42,
+          spin: 0,
+          collected: false
+        });
+      } else {
+        entities.push({
+          type: 'NEON_USB',
+          lane: lane,
+          z: 1.0,
+          w: 46,
+          h: 46,
+          spin: 0,
+          collected: false
+        });
+      }
+    }
+  </script>
+
+  <script>
+    function render3DScene() {
+      animationPulse += 0.06;
+      const horizonY = height * HORIZON;
+
+      // 1. Cyber Disco Sky
+      ctx.fillStyle = '#030014';
+      ctx.fillRect(0, 0, width, height);
+
+      const skyGrad = ctx.createLinearGradient(width / 2, 0, width / 2, horizonY);
+      skyGrad.addColorStop(0, 'rgba(168, 85, 247, 0.6)');
+      skyGrad.addColorStop(0.7, 'rgba(255, 0, 127, 0.45)');
+      skyGrad.addColorStop(1, 'rgba(3, 0, 20, 0.95)');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, width, horizonY);
+
+      // Audio Equalizer Bars
+      const barCount = 18;
+      const barW = width / barCount;
+      for (let i = 0; i < barCount; i++) {
+        const barH = 16 + Math.sin(animationPulse + i * 0.6) * 28 + Math.cos(animationPulse * 1.5 + i) * 16;
+        const color = i % 3 === 0 ? '#00f0ff' : (i % 3 === 1 ? '#ff007f' : '#39ff14');
+        ctx.fillStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = 12;
+        ctx.fillRect(i * barW + 2, horizonY - barH, barW - 4, barH);
+      }
+      ctx.shadowBlur = 0;
+
+      // Lasers
+      const laserAngle1 = Math.sin(animationPulse * 0.7) * (width * 0.45);
+      const laserAngle2 = Math.cos(animationPulse * 0.8) * (width * 0.45);
+
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.45)';
+      ctx.beginPath();
+      ctx.moveTo(width * 0.1, 0);
+      ctx.lineTo(width / 2 + laserAngle1, height);
+      ctx.stroke();
+
+      ctx.strokeStyle = 'rgba(255, 0, 127, 0.45)';
+      ctx.beginPath();
+      ctx.moveTo(width * 0.9, 0);
+      ctx.lineTo(width / 2 + laserAngle2, height);
+      ctx.stroke();
+
+      // 2. Reflective Runway Floor
+      const floorGrad = ctx.createLinearGradient(width / 2, horizonY, width / 2, height);
+      floorGrad.addColorStop(0, '#0a0022');
+      floorGrad.addColorStop(0.5, '#0e0735');
+      floorGrad.addColorStop(1, '#050215');
+      ctx.fillStyle = floorGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(width * 0.36, horizonY);
+      ctx.lineTo(width * 0.64, horizonY);
+      ctx.lineTo(width + 80, height);
+      ctx.lineTo(-80, height);
+      ctx.closePath();
+      ctx.fill();
+
+      // Wet Floor Highlight
+      ctx.fillStyle = 'rgba(255, 0, 127, 0.08)';
+      ctx.fillRect(0, horizonY, width, height - horizonY);
+
+      // Moving Gridlines
+      const gridCount = 12;
+      for (let i = 0; i < gridCount; i++) {
+        const offsetZ = ((meters * 0.04 + i / gridCount) % 1.0);
+        const pL = project3D(-1.5, offsetZ);
+        const pR = project3D(1.5, offsetZ);
+
+        ctx.strokeStyle = `rgba(0, 240, 255, ${0.1 + (1 - offsetZ) * 0.55})`;
+        ctx.lineWidth = 2 * (1 - offsetZ);
+        ctx.beginPath();
+        ctx.moveTo(pL.x, pL.y);
+        ctx.lineTo(pR.x, pR.y);
+        ctx.stroke();
+      }
+
+      // Neon Lane Separators
+      [-0.5, 0.5].forEach(divLane => {
+        const pFar = project3D(divLane, 1.0);
+        const pNear = project3D(divLane, 0.0);
+        ctx.strokeStyle = 'rgba(0, 240, 255, 0.7)';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = '#00f0ff';
+        ctx.shadowBlur = 8;
+        ctx.beginPath();
+        ctx.moveTo(pFar.x, pFar.y);
+        ctx.lineTo(pNear.x, pNear.y);
+        ctx.stroke();
+      });
+
+      // Lateral Electric Borders
+      [-1.5, 1.5].forEach((borderLane, idx) => {
+        const pFar = project3D(borderLane, 1.0);
+        const pNear = project3D(borderLane, 0.0);
+        const borderColor = idx === 0 ? '#ff007f' : '#39ff14';
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 6;
+        ctx.shadowColor = borderColor;
+        ctx.shadowBlur = 14;
+        ctx.beginPath();
+        ctx.moveTo(pFar.x, pFar.y);
+        ctx.lineTo(pNear.x, pNear.y);
+        ctx.stroke();
+      });
+      ctx.shadowBlur = 0;
+
+      // 3. Render 3D Obstacles and Collectibles
+      entities.sort((a, b) => b.z - a.z);
+
+      entities.forEach(item => {
+        if (item.collected) return;
+        const p = project3D(item.lane, item.z);
+        const scale = p.scale;
+
+        if (item.type === 'SUBWOOFER') {
+          item.pulse += 0.12;
+          const w = item.w * scale;
+          const h = item.h * scale;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          ctx.fillStyle = '#140c2e';
+          ctx.strokeStyle = '#00f0ff';
+          ctx.lineWidth = 3 * scale;
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 12 * scale;
+          ctx.fillRect(-w / 2, -h, w, h);
+          ctx.strokeRect(-w / 2, -h, w, h);
+
+          const conePulse = 1.0 + Math.sin(item.pulse) * 0.15;
+          ctx.shadowColor = '#ff007f';
+          ctx.shadowBlur = 15 * scale;
+          ctx.fillStyle = '#ff007f';
+
+          ctx.beginPath();
+          ctx.arc(0, -h * 0.7, (w * 0.28) * conePulse, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.arc(0, -h * 0.28, (w * 0.28) * conePulse, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        } else if (item.type === 'LASER_TRUSS') {
+          const w = item.w * scale;
+          const h = item.h * scale;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          ctx.fillStyle = '#334155';
+          ctx.fillRect(-w / 2, -h, 10 * scale, h);
+          ctx.fillRect(w / 2 - 10 * scale, -h, 10 * scale, h);
+
+          ctx.fillStyle = '#0f172a';
+          ctx.strokeStyle = '#ff007f';
+          ctx.lineWidth = 3 * scale;
+          ctx.fillRect(-w / 2, -h, w, 22 * scale);
+          ctx.strokeRect(-w / 2, -h, w, 22 * scale);
+
+          ctx.fillStyle = '#ff007f';
+          ctx.shadowColor = '#ff007f';
+          ctx.shadowBlur = 20 * scale;
+          ctx.fillRect(-w / 2 + 8 * scale, -h + 18 * scale, w - 16 * scale, 12 * scale);
+
+          ctx.restore();
+        } else if (item.type === 'DJ_BOOTH') {
+          item.turntableAngle = (item.turntableAngle || 0) + 0.1;
+          const w = item.w * scale;
+          const h = item.h * scale;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+
+          ctx.fillStyle = '#0f0a28';
+          ctx.strokeStyle = '#39ff14';
+          ctx.lineWidth = 3 * scale;
+          ctx.shadowColor = '#39ff14';
+          ctx.shadowBlur = 14 * scale;
+          ctx.fillRect(-w / 2, -h, w, h);
+          ctx.strokeRect(-w / 2, -h, w, h);
+
+          [-w * 0.26, w * 0.26].forEach(posX => {
+            ctx.save();
+            ctx.translate(posX, -h * 0.55);
+            ctx.rotate(item.turntableAngle);
+            ctx.fillStyle = '#1e293b';
+            ctx.beginPath();
+            ctx.arc(0, 0, w * 0.18, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2 * scale;
+            ctx.beginPath();
+            ctx.arc(0, 0, w * 0.12, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+          });
+
+          ctx.restore();
+        } else if (item.type === 'GOLD_VINYL') {
+          item.spin = (item.spin || 0) + 0.08;
+          const r = (item.w / 2) * scale;
+          const floatOffset = Math.sin(animationPulse * 2 + item.z * 5) * 10 * scale;
+
+          ctx.save();
+          ctx.translate(p.x, p.y - 28 * scale + floatOffset);
+          ctx.rotate(item.spin);
+
+          ctx.fillStyle = '#0f0a1c';
+          ctx.beginPath();
+          ctx.arc(0, 0, r, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.strokeStyle = '#ffd700';
+          ctx.lineWidth = 3.5 * scale;
+          ctx.shadowColor = '#ffd700';
+          ctx.shadowBlur = 16 * scale;
+          ctx.stroke();
+
+          ctx.fillStyle = '#ffd700';
+          ctx.beginPath();
+          ctx.arc(0, 0, r * 0.38, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        } else if (item.type === 'NEON_USB') {
+          item.spin = (item.spin || 0) + 0.06;
+          const w = item.w * scale;
+          const h = (item.h * 0.5) * scale;
+          const floatOffset = Math.cos(animationPulse * 2 + item.z * 5) * 12 * scale;
+
+          ctx.save();
+          ctx.translate(p.x, p.y - 32 * scale + floatOffset);
+          ctx.rotate(item.spin);
+
+          ctx.fillStyle = '#00f0ff';
+          ctx.shadowColor = '#00f0ff';
+          ctx.shadowBlur = 20 * scale;
+          ctx.fillRect(-w / 2, -h / 2, w * 0.7, h);
+
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(w * 0.2, -h * 0.35, w * 0.3, h * 0.7);
+
+          ctx.restore();
+        }
+      });
+
+      // 4. Render DJ Character
+      player.visualLane += (player.lane - player.visualLane) * 0.26;
+      const pp = project3D(player.visualLane, player.z, player.y);
+      const pScale = pp.scale;
+
+      if (isVip) {
+        triggerVipSparkles(pp.x, pp.y - 30 * pScale);
+      }
+
+      for (let i = vipParticles.length - 1; i >= 0; i--) {
+        const pt = vipParticles[i];
+        pt.x += pt.vx;
+        pt.y += pt.vy;
+        pt.life -= pt.decay;
+
+        if (pt.life <= 0) {
+          vipParticles.splice(i, 1);
+        } else {
+          ctx.fillStyle = `rgba(255, 215, 0, ${pt.life})`;
+          ctx.shadowColor = '#ffd700';
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(pt.x, pt.y, pt.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+      ctx.shadowBlur = 0;
+
+      // Floor Shadow
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.55)';
+      ctx.beginPath();
+      ctx.ellipse(pp.x, pp.y + 2, 30 * pScale, 12 * pScale, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.save();
+      ctx.translate(pp.x, pp.y);
+
+      if (player.isJumping) {
+        player.jumpSpin += 0.2;
+        ctx.rotate(Math.sin(player.jumpSpin) * 0.3);
+      }
+
+      const isGoldSkin = isVip;
+      const djGlowColor = isGoldSkin ? '#ffd700' : (player.isSliding ? '#ff007f' : '#00f0ff');
+      ctx.shadowColor = djGlowColor;
+      ctx.shadowBlur = 24 * pScale;
+
+      if (player.isSliding) {
+        ctx.fillStyle = isGoldSkin ? '#ffd700' : '#ff007f';
+        ctx.fillRect(-22 * pScale, -26 * pScale, 44 * pScale, 22 * pScale);
+
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath();
+        ctx.arc(12 * pScale, -18 * pScale, 11 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 5 * pScale;
+        ctx.beginPath();
+        ctx.arc(12 * pScale, -18 * pScale, 13 * pScale, 0, Math.PI * 2);
+        ctx.stroke();
+      } else {
+        ctx.fillStyle = isGoldSkin ? '#ffd700' : '#0284c7';
+        ctx.fillRect(-18 * pScale, -50 * pScale, 36 * pScale, 38 * pScale);
+
+        ctx.fillStyle = '#fed7aa';
+        ctx.beginPath();
+        ctx.arc(0, -60 * pScale, 13 * pScale, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = isGoldSkin ? '#ffffff' : '#0f172a';
+        ctx.beginPath();
+        ctx.arc(0, -64 * pScale, 13 * pScale, Math.PI, 0);
+        ctx.fill();
+        ctx.fillRect(-16 * pScale, -64 * pScale, 32 * pScale, 5 * pScale);
+
+        ctx.strokeStyle = '#00f0ff';
+        ctx.lineWidth = 5 * pScale;
+        ctx.beginPath();
+        ctx.arc(0, -58 * pScale, 16 * pScale, Math.PI * 0.8, Math.PI * 0.2, true);
+        ctx.stroke();
+
+        ctx.fillStyle = '#ff007f';
+        ctx.fillRect(-19 * pScale, -60 * pScale, 6 * pScale, 10 * pScale);
+        ctx.fillRect(13 * pScale, -60 * pScale, 6 * pScale, 10 * pScale);
+
+        const swing = Math.sin(meters * 0.6) * 10 * pScale;
+        ctx.fillStyle = '#1e1b4b';
+        ctx.fillRect(-14 * pScale, -12 * pScale, 10 * pScale, 14 + swing);
+        ctx.fillRect(4 * pScale, -12 * pScale, 10 * pScale, 14 - swing);
+      }
+
+      ctx.restore();
+    }
+  </script>
+
+  <script>
+    function updateGameLogic() {
+      if (gameState !== 'PLAYING') return;
+
+      meters += 1.0;
+      document.getElementById('hudMeters').innerText = Math.floor(meters) + 'm';
+      baseSpeed = 0.0078 + Math.min(meters * 0.000012, 0.012);
+
+      // Jump Physics
+      if (player.isJumping) {
+        player.y += player.vy;
+        player.vy -= player.gravity;
+        if (player.y <= 0) {
+          player.y = 0;
+          player.isJumping = false;
+        }
+      }
+
+      // Slide Timer
+      if (player.isSliding) {
+        player.slideTimer--;
+        if (player.slideTimer <= 0) {
+          player.isSliding = false;
+        }
+      }
+
+      // Spawning
+      spawnTimer++;
+      if (spawnTimer > 40) {
+        spawnGameEntity();
+        spawnTimer = 0;
+      }
+
+      // Entity Movement & Collision
+      for (let i = entities.length - 1; i >= 0; i--) {
+        const item = entities[i];
+        item.z -= baseSpeed;
+
+        if (Math.abs(item.z - player.z) < 0.046 && item.lane === player.lane) {
+          if (item.type === 'GOLD_VINYL' && !item.collected) {
+            item.collected = true;
+            const mult = isVip ? 3 : 1;
+            sessionVinyls += 1 * mult;
+            totalVinylsSaved += 1 * mult;
+            localStorage.setItem('subway_total_vinyls', totalVinylsSaved);
+            document.getElementById('hudVinyls').innerText = '📀 ' + sessionVinyls;
+            playSfx('vinyl');
+          } else if (item.type === 'NEON_USB' && !item.collected) {
+            item.collected = true;
+            const mult = isVip ? 3 : 1;
+            sessionVinyls += 5 * mult;
+            totalVinylsSaved += 5 * mult;
+            localStorage.setItem('subway_total_vinyls', totalVinylsSaved);
+            document.getElementById('hudVinyls').innerText = '📀 ' + sessionVinyls;
+            playSfx('usb');
+          } else if (item.type === 'SUBWOOFER' || item.type === 'DJ_BOOTH') {
+            if (player.y < 36) {
+              handleGameOver();
+              return;
+            }
+          } else if (item.type === 'LASER_TRUSS') {
+            if (!player.isSliding) {
+              handleGameOver();
+              return;
+            }
+          }
+        }
+
+        if (item.z <= 0.0) {
+          entities.splice(i, 1);
+        }
+      }
+    }
+
+    function mainLoop() {
+      updateGameLogic();
+      render3DScene();
+      requestAnimationFrame(mainLoop);
+    }
+    requestAnimationFrame(mainLoop);
+
+    function syncUIState() {
+      const startBadge = document.getElementById('startVipBadge');
+      if (isVip) {
+        startBadge.innerText = '👑 VIP PRO ACTIVADO (VIDAS INFINITAS & 3X)';
+        startBadge.classList.add('active');
+      } else {
+        startBadge.innerText = `MODO GRATUITO (${freeLives}/3 VIDAS)`;
+        startBadge.classList.remove('active');
+      }
+
+      document.getElementById('startBestDist').innerText = highDistance + 'm';
+      document.getElementById('startTotalVinyls').innerText = totalVinylsSaved;
+    }
+    syncUIState();
+
+    function handleGameOver() {
+      gameState = 'GAMEOVER';
+      stopClassicalEdmSynth();
+      playSfx('crash');
+
+      if (meters > highDistance) {
+        highDistance = Math.floor(meters);
+        localStorage.setItem('subway_high_dist', highDistance);
+      }
+
+      document.getElementById('goDist').innerText = Math.floor(meters) + 'm';
+      document.getElementById('goVinyls').innerText = sessionVinyls;
+
+      if (!isVip) {
+        freeLives--;
+        if (freeLives < 0) freeLives = 0;
+        localStorage.setItem('subway_free_lives', freeLives);
+        document.getElementById('goLivesMsg').innerText =
+          freeLives > 0
+            ? `Vidas restantes en tu sesión: ${freeLives}`
+            : '¡Te quedaste sin vidas gratis! Paga tu VIP Pro de $4.99 USD para continuar jugando.';
+      } else {
+        document.getElementById('goLivesMsg').innerText = '👑 Tienes Vidas Infinitas con tu Pase VIP PRO';
+      }
+
+      document.getElementById('screenGameOver').classList.remove('hidden');
+    }
+
+    // Play & Restart button listeners
+    document.getElementById('btnPlayGame').addEventListener('click', () => {
+      getAudio();
+      if (!isVip && freeLives <= 0) {
+        alert('Se han agotado tus 3 vidas gratuitas. Desbloquea el Pase VIP de $4.99 USD con PayPal para jugar ilimitado.');
+        return;
+      }
+      resetWorld();
+      gameState = 'PLAYING';
+      document.getElementById('screenStart').classList.add('hidden');
+      startClassicalEdmSynth();
+    });
+
+    document.getElementById('btnRestartGame').addEventListener('click', () => {
+      getAudio();
+      if (!isVip && freeLives <= 0) {
+        alert('Ya no te quedan vidas gratuitas. Desbloquea tu VIP Pro de $4.99 USD en PayPal para seguir.');
+        return;
+      }
+      resetWorld();
+      gameState = 'PLAYING';
+      document.getElementById('screenGameOver').classList.add('hidden');
+      startClassicalEdmSynth();
+    });
+
+    // Track Switcher Listener
+    document.getElementById('btnNextTrack').addEventListener('click', () => {
+      getAudio();
+      switchClassicalTrack();
+    });
+
+    // Pause & Mute controls
+    const btnPause = document.getElementById('btnPause');
+    btnPause.addEventListener('click', () => {
+      if (gameState === 'PLAYING') {
+        gameState = 'PAUSED';
+        btnPause.innerText = '▶️';
+        stopClassicalEdmSynth();
+      } else if (gameState === 'PAUSED') {
+        gameState = 'PLAYING';
+        btnPause.innerText = '⏸️';
+        startClassicalEdmSynth();
+      }
+    });
+
+    const btnMute = document.getElementById('btnMute');
+    btnMute.addEventListener('click', () => {
+      isMuted = !isMuted;
+      btnMute.innerText = isMuted ? '🔇' : '🔊';
+    });
+
+    // Robust PayPal Direct Launcher
+    function openPaypalWindow(e) {
+      if (e) e.preventDefault();
+      try {
+        const win = window.open(PAYPAL_LINK, '_blank', 'noopener,noreferrer');
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+          window.location.href = PAYPAL_LINK;
+        }
+      } catch (err) {
+        window.location.href = PAYPAL_LINK;
+      }
+    }
+
+    document.getElementById('startPaypalLink').addEventListener('click', openPaypalWindow);
+    document.getElementById('goPaypalLink').addEventListener('click', openPaypalWindow);
+
+    // VIP Unlock System
+    function unlockVipAccess(code) {
+      if (code.trim().toUpperCase() === VIP_KEY) {
+        isVip = true;
+        localStorage.setItem('subway_vip_unlocked', 'true');
+        syncUIState();
+        alert('🎉 ¡PASE VIP PRO ACTIVADO CON ÉXITO!\nDisfruta de Vidas Infinitas, Multiplicador 3X y tu DJ Dorado con partículas neón.');
+        document.getElementById('screenGameOver').classList.add('hidden');
+        document.getElementById('screenStart').classList.remove('hidden');
+      } else {
+        alert('Código incorrecto. Realiza el pago en https://www.paypal.me/Mendozabizarre/4.99 para recibir tu clave.');
+      }
+    }
+
+    document.getElementById('btnStartVipCheck').addEventListener('click', () => {
+      unlockVipAccess(document.getElementById('startVipInput').value);
+    });
+
+    document.getElementById('btnGoVipCheck').addEventListener('click', () => {
+      unlockVipAccess(document.getElementById('goVipInput').value);
+    });
+  </script>
+</body>
+</html>
